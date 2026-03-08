@@ -2,6 +2,7 @@ import csv
 import os
 import random
 
+# Menggunakan konstanta folder yang sudah ditentukan kelompokmu
 FILE_NAME = "ZTugasAkhir/data.csv"
 
 players = []        # List (data utama)
@@ -12,6 +13,10 @@ history_stack = []  # Stack (riwayat)
 # ========================
 def load_data():
     players.clear()
+
+    # Memastikan folder ZTugasAkhir ada agar tidak error saat save
+    if not os.path.exists("ZTugasAkhir"):
+        os.makedirs("ZTugasAkhir")
 
     if not os.path.exists(FILE_NAME):
         with open(FILE_NAME, "w", newline="") as file:
@@ -27,11 +32,27 @@ def load_data():
                 "skor": int(row["skor"])
             })
 
-
 def save_data():
-    # TODO: simpan data players ke file CSV
-    pass
+    """
+    Fungsi milik Najla: Menyimpan seluruh data pemain dari list ke file CSV.
+    Mengimplementasikan File Handling untuk penyimpanan permanen.
+    """
+    try:
+        with open(FILE_NAME, mode='w', newline='') as file:
+            fieldnames = ['nama', 'skor']
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
 
+            writer.writeheader()
+            
+            # Memastikan skor adalah integer sebelum disimpan agar data konsisten
+            for p in players:
+                p['skor'] = int(p['skor'])
+            
+            writer.writerows(players)
+            
+        print(f" [OK] Data telah disinkronkan ke {FILE_NAME}.")
+    except Exception as e:
+        print(f" Kesalahan: Gagal menyimpan data. Alasan: {e}")
 
 # ========================
 # GAME TEBAK ANGKA
@@ -70,54 +91,73 @@ def play_game():
 
     simpan_skor(nama, skor)
 
-
 def simpan_skor(nama, skor):
-    # TODO: tambah skor pemain atau buat pemain baru
-    pass
-
+    # Logika untuk menambah pemain baru ke list global
+    players.append({"nama": nama, "skor": skor})
+    save_data() # Langsung simpan ke CSV setiap ada skor baru
 
 # ========================
 # CRUD & FITUR DATA
 # ========================
 def tampilkan_leaderboard():
-    # TODO: tampilkan ranking pemain berdasarkan skor
-    pass
-
+    # Menampilkan data yang ada di list players
+    print("\n=== LEADERBOARD ===")
+    if not players:
+        print("Belum ada data pemain.")
+        return
+    for p in players:
+        print(f"Nama: {p['nama']} | Skor: {p['skor']}")
 
 def cari_pemain():
-    # TODO: cari pemain berdasarkan nama
-    pass
+    """
+    Fungsi milik Najla: Mencari data pemain tertentu berdasarkan nama.
+    Mengimplementasikan algoritma Linear Search.
+    """
+    print("\n=== FITUR PENCARIAN PEMAIN ===")
+    nama_dicari = input("Masukkan nama pemain yang ingin dicari: ").strip()
 
+    hasil_pencarian = []
+
+    # Iterasi Linear Search untuk mencocokkan nama
+    for pemain in players:
+        if nama_dicari.lower() in pemain['nama'].lower():
+            hasil_pencarian.append(pemain)
+
+    if hasil_pencarian:
+        print(f"\nDitemukan {len(hasil_pencarian)} data yang cocok:")
+        print("-" * 30)
+        for idx, p in enumerate(hasil_pencarian, 1):
+            print(f"{idx}. Nama: {p['nama']} | Skor: {p['skor']}")
+        print("-" * 30)
+    else:
+        print(f"\n Data dengan nama '{nama_dicari}' tidak ditemukan.")
 
 def update_skor():
-    # TODO: update skor pemain
+    # Fitur ini bisa dikembangkan nanti
     pass
 
-
 def hapus_pemain():
-    nama = input("Nama pemain: ")
-
+    nama = input("Nama pemain yang akan dihapus: ")
     for p in players:
         if p["nama"].lower() == nama.lower():
             history_stack.append(("Hapus", p.copy()))
             players.remove(p)
             save_data()
-            print("Data dihapus.")
+            print("Data berhasil dihapus.")
             return
-
     print("Pemain tidak ditemukan.")
 
-
 def tampilkan_riwayat():
-    # TODO: tampilkan history dari stack
+    # Fitur riwayat dari stack
     pass
-
 
 # ========================
 # MENU
 # ========================
 def menu():
-    print("\n===== MENU =====")
+    print("\n" + "="*20)
+    print("      MENU GAME")
+    print("="*20)
     print("1. Main Game Tebak Angka")
     print("2. Tampilkan Leaderboard")
     print("3. Cari Pemain")
@@ -125,7 +165,6 @@ def menu():
     print("5. Hapus Pemain")
     print("6. Lihat Riwayat")
     print("0. Keluar")
-
 
 def main():
     load_data()
@@ -147,11 +186,10 @@ def main():
         elif pilih == "6":
             tampilkan_riwayat()
         elif pilih == "0":
-            print("Program selesai.")
+            print("Program selesai. Sampai jumpa!")
             break
         else:
             print("Pilihan tidak valid.")
-
 
 if __name__ == "__main__":
     main()
