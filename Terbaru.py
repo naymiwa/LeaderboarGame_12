@@ -2,6 +2,19 @@ import csv
 import os
 import random
 
+
+'''
+1. 'Load Data'
+2. 'Save Data'
+3. 'Play Game'
+4. 'Simpan Skor'
+5. 'Tampilkan Leaderboard'
+6. 'Cari Pemain'
+7. 'Update Skor'
+8. 'Hapus Pemain'
+9. 'Tampilkan Riwayat Perubahan Data'
+10. 'Menu Game'
+'''
 # Menggunakan konstanta folder yang sudah ditentukan kelompokmu
 FILE_NAME = "ZTugasAkhir/data.csv"
 
@@ -63,9 +76,9 @@ def save_data():
 
 def play_game(player_name):
     print(f"Selamat datang, {player_name}! Ayo main tebak angka!")
-    nama = input("Masukkan nama kamu: ").strip()
+    nama = player_name.strip()
 
-    if nama == "":
+    if player_name == "":
         print("Nama tidak boleh kosong. Silakan coba lagi.")
         return
     
